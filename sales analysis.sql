@@ -1,0 +1,735 @@
+-- ==========================================
+-- SALES ANALYSIS PROJECT
+-- CREATE SALES TABLE
+-- ==========================================
+
+CREATE TABLE sales (
+
+    "Row ID" INT,
+    "Order ID" VARCHAR(50),
+    "Order Date" DATE,
+    "Ship Date" DATE,
+    "Ship Mode" VARCHAR(50),
+    "Customer ID" VARCHAR(50),
+    "Customer Name" VARCHAR(100),
+    Segment VARCHAR(50),
+    Country VARCHAR(100),
+    City VARCHAR(100),
+    State VARCHAR(100),
+    "Postal Code" VARCHAR(20),
+    Region VARCHAR(50),
+    "Product ID" VARCHAR(50),
+    Category VARCHAR(50),
+    "Sub-Category" VARCHAR(50),
+    "Product Name" TEXT,
+    Sales NUMERIC(12,2),
+    Quantity INT,
+    Discount NUMERIC(5,2),
+    Profit NUMERIC(12,2)
+
+);
+
+select *  from sales;
+
+-- ==========================================
+-- SALES ANALYSIS PROJECT
+-- LEVEL 1: DATA EXPLORATION
+-- ==========================================
+
+
+-- 1. Display All Records
+
+SELECT *
+FROM sales;
+
+
+-- 2. Display First 10 Records
+
+SELECT *
+FROM sales
+LIMIT 10;
+
+
+-- 3. Count Total Records
+
+SELECT COUNT(*) AS total_records
+FROM sales;
+
+
+-- 4. Count Total Orders
+
+SELECT COUNT(DISTINCT "Order ID") AS total_orders
+FROM sales;
+
+
+-- 5. Count Unique Customers
+
+SELECT COUNT(DISTINCT "Customer ID") AS total_customers
+FROM sales;
+
+
+-- 6. Find Unique Categories
+
+SELECT DISTINCT Category
+FROM sales;
+
+
+-- 7. Find Unique Regions
+
+SELECT DISTINCT Region
+FROM sales;
+
+
+-- 8. Find Unique Customer Segments
+
+SELECT DISTINCT Segment
+FROM sales;
+
+
+-- 9. Find Minimum and Maximum Order Date
+
+SELECT
+    MIN("Order Date") AS first_order_date,
+    MAX("Order Date") AS last_order_date
+FROM sales;
+
+
+-- 10. Check Missing Values in Important Columns
+
+SELECT
+    COUNT(*) FILTER (WHERE "Order ID" IS NULL) AS missing_order_id,
+    COUNT(*) FILTER (WHERE "Customer ID" IS NULL) AS missing_customer_id,
+    COUNT(*) FILTER (WHERE Sales IS NULL) AS missing_sales,
+    COUNT(*) FILTER (WHERE Profit IS NULL) AS missing_profit
+FROM sales;
+
+SELECT
+    SUM(Sales),  AS total_sales
+FROM sales;
+
+
+-- ==========================================
+-- SALES ANALYSIS PROJECT
+-- LEVEL 2: BASIC BUSINESS ANALYSIS
+-- ==========================================
+
+
+-- 1. Find Total Sales
+
+SELECT SUM(Sales) AS total_sales
+FROM sales;
+
+
+-- 2. Find Total Profit
+
+SELECT SUM(Profit) AS total_profit
+FROM sales;
+
+
+-- 3. Find Total Quantity Sold
+
+SELECT SUM(Quantity) AS total_quantity
+FROM sales;
+
+
+-- 4. Find Total Orders in Each Category
+
+SELECT
+    Category,
+    COUNT(DISTINCT "Order ID") AS total_orders
+FROM sales
+GROUP BY Category
+ORDER BY total_orders DESC;
+
+
+-- 5. Find Total Sales by Category
+
+SELECT
+    Category,
+    SUM(Sales) AS total_sales
+FROM sales
+GROUP BY Category
+ORDER BY total_sales DESC;
+
+
+-- 6. Find Total Profit by Category
+
+SELECT
+    Category,
+    SUM(Profit) AS total_profit
+FROM sales
+GROUP BY Category
+ORDER BY total_profit DESC;
+
+
+-- 7. Find Total Sales by Region
+
+SELECT
+    Region,
+    SUM(Sales) AS total_sales
+FROM sales
+GROUP BY Region
+ORDER BY total_sales DESC;
+
+
+-- 8. Find Total Profit by Region
+
+SELECT
+    Region,
+    SUM(Profit) AS total_profit
+FROM sales
+GROUP BY Region
+ORDER BY total_profit DESC;
+
+
+-- 9. Find Total Sales by State
+
+SELECT
+    State,
+    SUM(Sales) AS total_sales
+FROM sales
+GROUP BY State
+ORDER BY total_sales DESC;
+
+
+-- 10. Find Top 10 Best-Selling Products
+
+SELECT
+    "Product Name",
+    SUM(Sales) AS total_sales
+FROM sales
+GROUP BY "Product Name"
+ORDER BY total_sales DESC
+LIMIT 10;
+
+
+-- 11. Find Top 10 Most Profitable Products
+
+SELECT
+    "Product Name",
+    SUM(Profit) AS total_profit
+FROM sales
+GROUP BY "Product Name"
+ORDER BY total_profit DESC
+LIMIT 10;
+
+
+-- 12. Find Top 10 Customers by Sales
+
+SELECT
+    "Customer Name",
+    SUM(Sales) AS total_sales
+FROM sales
+GROUP BY "Customer Name"
+ORDER BY total_sales DESC
+LIMIT 10;
+
+
+-- 13. Find Sales by Customer Segment
+
+SELECT
+    Segment,
+    SUM(Sales) AS total_sales
+FROM sales
+GROUP BY Segment
+ORDER BY total_sales DESC;
+
+
+-- 14. Find Total Sales by Ship Mode
+
+SELECT
+    "Ship Mode",
+    SUM(Sales) AS total_sales
+FROM sales
+GROUP BY "Ship Mode"
+ORDER BY total_sales DESC;
+
+
+-- 15. Find Average Discount by Category
+
+SELECT
+    Category,
+    AVG(Discount) AS average_discount
+FROM sales
+GROUP BY Category
+ORDER BY average_discount DESC;
+
+
+-- 16. Find Products Generating Loss
+
+SELECT
+    "Product Name",
+    SUM(Profit) AS total_profit
+FROM sales
+GROUP BY "Product Name"
+HAVING SUM(Profit) < 0
+ORDER BY total_profit;
+
+
+-- 17. Find Monthly Sales
+
+SELECT
+    EXTRACT(YEAR FROM "Order Date") AS sales_year,
+    EXTRACT(MONTH FROM "Order Date") AS sales_month,
+    SUM(Sales) AS total_sales
+FROM sales
+GROUP BY
+    EXTRACT(YEAR FROM "Order Date"),
+    EXTRACT(MONTH FROM "Order Date")
+ORDER BY sales_year, sales_month;
+
+
+-- 18. Find Customers with More Than 5 Orders
+
+SELECT
+    "Customer Name",
+    COUNT(DISTINCT "Order ID") AS total_orders
+FROM sales
+GROUP BY "Customer Name"
+HAVING COUNT(DISTINCT "Order ID") > 5
+ORDER BY total_orders DESC;
+
+
+-- 19. Find Sub-Categories with Highest Sales
+
+SELECT
+    "Sub-Category",
+    SUM(Sales) AS total_sales
+FROM sales
+GROUP BY "Sub-Category"
+ORDER BY total_sales DESC;
+
+
+-- 20. Find Sub-Categories Generating Negative Profit
+
+SELECT
+    "Sub-Category",
+    SUM(Profit) AS total_profit
+FROM sales
+GROUP BY "Sub-Category"
+HAVING SUM(Profit) < 0
+ORDER BY total_profit;
+
+
+-- ==========================================
+-- SALES ANALYSIS PROJECT
+-- LEVEL 3: INTERMEDIATE BUSINESS ANALYSIS
+-- ==========================================
+
+
+-- 1. Categorize Sales into High, Medium and Low
+
+SELECT
+    "Order ID",
+    "Product Name",
+    Sales,
+    CASE
+        WHEN Sales >= 500 THEN 'High Sales'
+        WHEN Sales >= 200 THEN 'Medium Sales'
+        ELSE 'Low Sales'
+    END AS sales_category
+FROM sales
+ORDER BY Sales DESC;
+
+
+-- 2. Categorize Profit as Profit, Loss or No Profit
+
+SELECT
+    "Product Name",
+    Profit,
+    CASE
+        WHEN Profit > 0 THEN 'Profit'
+        WHEN Profit < 0 THEN 'Loss'
+        ELSE 'No Profit'
+    END AS profit_status
+FROM sales;
+
+
+-- 3. Find Products Having Sales Greater Than Average Sales
+
+SELECT
+    "Product Name",
+    Sales
+FROM sales
+WHERE Sales > (
+    SELECT AVG(Sales)
+    FROM sales
+)
+ORDER BY Sales DESC;
+
+
+-- 4. Find Customers Whose Total Sales Are Greater Than Average Customer Sales
+
+SELECT
+    "Customer Name",
+    SUM(Sales) AS total_sales
+FROM sales
+GROUP BY "Customer Name"
+HAVING SUM(Sales) > (
+    SELECT AVG(customer_sales)
+    FROM (
+        SELECT SUM(Sales) AS customer_sales
+        FROM sales
+        GROUP BY "Customer ID"
+    ) AS customer_data
+)
+ORDER BY total_sales DESC;
+
+
+-- 5. Find the Highest-Selling Product in Each Category
+
+WITH product_sales AS (
+    SELECT
+        Category,
+        "Product Name",
+        SUM(Sales) AS total_sales
+    FROM sales
+    GROUP BY Category, "Product Name"
+),
+ranked_products AS (
+    SELECT
+        Category,
+        "Product Name",
+        total_sales,
+        RANK() OVER (
+            PARTITION BY Category
+            ORDER BY total_sales DESC
+        ) AS product_rank
+    FROM product_sales
+)
+SELECT
+    Category,
+    "Product Name",
+    total_sales
+FROM ranked_products
+WHERE product_rank = 1;
+
+
+-- 6. Find Regions Having Profit Greater Than Average Regional Profit
+
+SELECT
+    Region,
+    SUM(Profit) AS total_profit
+FROM sales
+GROUP BY Region
+HAVING SUM(Profit) > (
+    SELECT AVG(region_profit)
+    FROM (
+        SELECT SUM(Profit) AS region_profit
+        FROM sales
+        GROUP BY Region
+    ) AS regional_data
+)
+ORDER BY total_profit DESC;
+
+
+-- 7. Find Customers Who Have Purchased in Multiple Categories
+
+SELECT
+    "Customer Name",
+    COUNT(DISTINCT Category) AS category_count
+FROM sales
+GROUP BY "Customer ID", "Customer Name"
+HAVING COUNT(DISTINCT Category) > 1
+ORDER BY category_count DESC;
+
+
+-- 8. Find Monthly Sales Using CTE
+
+WITH monthly_sales AS (
+    SELECT
+        DATE_TRUNC('month', "Order Date") AS sales_month,
+        SUM(Sales) AS total_sales
+    FROM sales
+    GROUP BY DATE_TRUNC('month', "Order Date")
+)
+SELECT
+    sales_month,
+    total_sales
+FROM monthly_sales
+ORDER BY sales_month;
+
+
+-- 9. Find Products with Above-Average Profit Within Their Category
+
+SELECT
+    Category,
+    "Product Name",
+    SUM(Profit) AS total_profit
+FROM sales
+GROUP BY Category, "Product Name"
+HAVING SUM(Profit) > (
+    SELECT AVG(product_profit)
+    FROM (
+        SELECT SUM(Profit) AS product_profit
+        FROM sales AS s2
+        WHERE s2.Category = sales.Category
+        GROUP BY "Product Name"
+    ) AS category_products
+)
+ORDER BY Category, total_profit DESC;
+
+
+-- 10. Find Customers Who Have Purchased from All Categories
+
+SELECT
+    "Customer Name",
+    COUNT(DISTINCT Category) AS total_categories
+FROM sales
+GROUP BY "Customer ID", "Customer Name"
+HAVING COUNT(DISTINCT Category) = (
+    SELECT COUNT(DISTINCT Category)
+    FROM sales
+)
+ORDER BY "Customer Name";
+
+
+-- ==========================================
+-- SALES ANALYSIS PROJECT
+-- LEVEL 4: ADVANCE BUSINESS ANALYSIS
+-- ==========================================
+
+-- 1. TOP 3 PRODUCTS IN EACH CATEGORY
+
+WITH product_sales AS (
+    SELECT
+        Category,
+        "Product Name",
+        SUM(Sales) AS total_sales
+    FROM sales
+    GROUP BY Category, "Product Name"
+),
+
+ranked_products AS (
+    SELECT
+        Category,
+        "Product Name",
+        total_sales,
+        DENSE_RANK() OVER(
+            PARTITION BY Category
+            ORDER BY total_sales DESC
+        ) AS product_rank
+    FROM product_sales
+)
+
+SELECT *
+FROM ranked_products
+WHERE product_rank <= 3
+ORDER BY Category, product_rank;
+
+-- 2. RANK CUSTOMERS BY TOTAL SALES
+
+SELECT
+    "Customer ID",
+    "Customer Name",
+    SUM(Sales) AS total_sales,
+
+    RANK() OVER(
+        ORDER BY SUM(Sales) DESC
+    ) AS customer_rank
+
+FROM sales
+GROUP BY "Customer ID", "Customer Name"
+ORDER BY customer_rank;
+
+-- 3. FIND SECOND HIGHEST SALES ORDER
+
+WITH order_sales AS (
+    SELECT
+        "Order ID",
+        SUM(Sales) AS total_sales
+    FROM sales
+    GROUP BY "Order ID"
+),
+
+ranked_orders AS (
+    SELECT
+        "Order ID",
+        total_sales,
+        DENSE_RANK() OVER(
+            ORDER BY total_sales DESC
+        ) AS sales_rank
+    FROM order_sales
+)
+
+SELECT *
+FROM ranked_orders
+WHERE sales_rank = 2;
+
+
+-- 4. RUNNING TOTAL OF MONTHLY SALES
+
+WITH monthly_sales AS (
+    SELECT
+        DATE_TRUNC('month', "Order Date") AS sales_month,
+        SUM(Sales) AS total_sales
+    FROM sales
+    GROUP BY DATE_TRUNC('month', "Order Date")
+)
+
+SELECT
+    sales_month,
+    total_sales,
+
+    SUM(total_sales) OVER(
+        ORDER BY sales_month
+        ROWS BETWEEN UNBOUNDED PRECEDING
+        AND CURRENT ROW
+    ) AS running_total
+
+FROM monthly_sales
+ORDER BY sales_month;
+
+-- 5. COMPARE CURRENT AND PREVIOUS MONTH SALES
+
+WITH monthly_sales AS (
+    SELECT
+        DATE_TRUNC('month', "Order Date") AS sales_month,
+        SUM(Sales) AS total_sales
+    FROM sales
+    GROUP BY DATE_TRUNC('month', "Order Date")
+)
+
+SELECT
+    sales_month,
+    total_sales,
+
+    LAG(total_sales) OVER(
+        ORDER BY sales_month
+    ) AS previous_month_sales
+
+FROM monthly_sales
+ORDER BY sales_month;
+
+-- 6. FIND NEXT MONTH SALES USING LEAD()
+
+WITH monthly_sales AS (
+    SELECT
+        DATE_TRUNC('month', "Order Date") AS sales_month,
+        SUM(Sales) AS total_sales
+    FROM sales
+    GROUP BY DATE_TRUNC('month', "Order Date")
+)
+
+SELECT
+    sales_month,
+    total_sales,
+
+    LEAD(total_sales) OVER(
+        ORDER BY sales_month
+    ) AS next_month_sales
+
+FROM monthly_sales
+ORDER BY sales_month;
+
+-- 7. MOST PROFITABLE PRODUCT IN EACH REGION
+
+WITH product_profit AS (
+    SELECT
+        Region,
+        "Product Name",
+        SUM(Profit) AS total_profit
+    FROM sales
+    GROUP BY Region, "Product Name"
+),
+
+ranked_products AS (
+    SELECT
+        Region,
+        "Product Name",
+        total_profit,
+
+        ROW_NUMBER() OVER(
+            PARTITION BY Region
+            ORDER BY total_profit DESC
+        ) AS product_rank
+
+    FROM product_profit
+)
+
+SELECT *
+FROM ranked_products
+WHERE product_rank = 1
+ORDER BY Region;
+
+-- 8. THREE-MONTH MOVING AVERAGE SALES
+
+WITH monthly_sales AS (
+    SELECT
+        DATE_TRUNC('month', "Order Date") AS sales_month,
+        SUM(Sales) AS total_sales
+    FROM sales
+    GROUP BY DATE_TRUNC('month', "Order Date")
+)
+
+SELECT
+    sales_month,
+    total_sales,
+
+    AVG(total_sales) OVER(
+        ORDER BY sales_month
+        ROWS BETWEEN 2 PRECEDING
+        AND CURRENT ROW
+    ) AS moving_average
+
+FROM monthly_sales
+ORDER BY sales_month;
+
+-- 9. RANK PRODUCTS WITHIN EACH SUB-CATEGORY
+
+WITH product_sales AS (
+    SELECT
+        "Sub-Category",
+        "Product Name",
+        SUM(Sales) AS total_sales
+    FROM sales
+    GROUP BY "Sub-Category", "Product Name"
+)
+
+SELECT
+    "Sub-Category",
+    "Product Name",
+    total_sales,
+
+    DENSE_RANK() OVER(
+        PARTITION BY "Sub-Category"
+        ORDER BY total_sales DESC
+    ) AS product_rank
+
+FROM product_sales
+ORDER BY "Sub-Category", product_rank;
+
+-- 10. TOP 5 CUSTOMERS IN EACH REGION
+
+WITH customer_sales AS (
+    SELECT
+        Region,
+        "Customer ID",
+        "Customer Name",
+        SUM(Sales) AS total_sales
+    FROM sales
+    GROUP BY
+        Region,
+        "Customer ID",
+        "Customer Name"
+),
+
+ranked_customers AS (
+    SELECT
+        Region,
+        "Customer ID",
+        "Customer Name",
+        total_sales,
+
+        ROW_NUMBER() OVER(
+            PARTITION BY Region
+            ORDER BY total_sales DESC
+        ) AS customer_rank
+
+    FROM customer_sales
+)
+
+SELECT *
+FROM ranked_customers
+WHERE customer_rank <= 5
+ORDER BY Region, customer_rank;
